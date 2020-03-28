@@ -1,3 +1,4 @@
+#+TITLE: Josh McIntosh's emacs config
 
 * General setup
 :PROPERTIES:
@@ -12,7 +13,29 @@ it's there. No worries if it isn't.
       (org-babel-load-file fname)))
 
 #+END_SRC
+* ERC
+IRC is great (ok, really, I don't use it as much as I used to). Turns out emacs
+can do IRC too! A few different ways! I use ERC!
 
+#+begin_src emacs-lisp :tangle yes
+(use-package! erc
+  :custom
+  (erc-autojoin-channels-alist '(("freenode.net" "#ubuntu" "#emacs" "#python"
+                                  "org-mode")))
+  (erc-autojoin-timing 'ident)
+  (erc-fill-function 'erc-fill-static)
+  (erc-fill-static-center 22)
+  (erc-hide-list '("JOIN" "PART" "QUIT"))
+  (erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
+  (erc-lurker-threshold-time 43200)
+  (erc-prompt-for-nickserv-password nil)
+
+  :config
+  (add-to-list 'erc-modules 'notifications)
+  (add-to-list 'erc-modules 'spelling)
+  (erc-services-mode 1)
+  (erc-update-modules))
+#+end_src
 * GNUS
 :PROPERTIES:
 :ID:       563a8e77-2ada-4025-96e6-dd5523978c3b
@@ -61,7 +84,7 @@ org-directory if needed.
 #+END_SRC
 
 ** Custom Packages
-*** Roam
+*** org-roam
 I've come to like the 'org-roam' package. I'm trying to build some momentum in
 zettelkasten data organization, and this seems promising.
 
@@ -70,8 +93,6 @@ zettelkasten data organization, and this seems promising.
   :hook
   (after-init . org-roam-mode)
   :commands (org-roam-insert org-roam-find-file org-roam)
-  :custom
-  (org-roam-directory (concat (file-name-as-directory org-directory) "KB"))
   :init
   (map! :leader
         :prefix "n"
@@ -79,7 +100,12 @@ zettelkasten data organization, and this seems promising.
         :desc "Org-Roam Find" "/" #'org-roam-find-file
         :desc "Org-Roam Buffer" "b" #'org-roam)
   :config
+  (unless (boundp 'org-roam-directory)
+    (setq org-roam-directory (concat (file-name-as-directory org-directory) "KB"))
+    (let* ((default-directory org-roam-directory))
+      (add-dir-local-variable nil org-roam-directory org-roam-directory)))
   (org-roam-mode +1))
+
 
 (use-package! company-org-roam
   :after org-roam company org
@@ -908,12 +934,3 @@ crated this.
 #+begin_src emacs-lisp :tangle yes
 )
 #+end_src
-
-* Misc
-:PROPERTIES:
-:ID:       f92f2508-91c3-43c0-b8aa-7464574dd15c
-:END:
-Things I currently have just because.
-#+BEGIN_SRC emacs-lisp :tangle yes
-;(load! "+gtd" nil t)
-#+END_SRC
