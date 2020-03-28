@@ -179,7 +179,7 @@ This is a handy function for stripping out empty time logs if they happen:
   (add-hook 'org-clock-out-hook 'jm/remove-empty-drawer-on-clock-out 'append)
 
 #+end_src
-*** Refiling
+** Refiling
 :PROPERTIES:
 :ID:       12181d3c-73ae-4579-95fd-bf763dfeb62e
 :END:
