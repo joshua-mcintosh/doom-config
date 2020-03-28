@@ -141,7 +141,7 @@ appropriately.
          "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
 
         ("d" "Daily" entry (file+datetree ,(concat org-directory "diary.org"))
-         (file ,(concat org-directory "templates/daily.org_template")))
+         (file ,(concat doom-private-dir "templates/daily.org_template")))
 
         ("r" "respond" entry (file ,(concat org-directory "refile.org"))
          "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
@@ -159,7 +159,7 @@ appropriately.
          "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
 
         ("w" "Review: Weekly Review" entry (file+olp+datetree ,(concat org-directory "reviews.org"))
-         (file ,(concat org-directory "templates/weeklyreviewtemplate.org")))
+         (file ,(concat doom-private-dir "templates/weeklyreviewtemplate.org")))
 
         ("j" "Journal" entry (file+datetree ,(concat org-directory "diary.org"))
          "* %?\n%U\n" :clock-in t :clock-resume t)
