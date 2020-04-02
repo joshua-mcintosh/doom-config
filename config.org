@@ -7,10 +7,12 @@ I have a little bit of config that lives on the work side, so lets load it if
 it's there. No worries if it isn't.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(condition-case nil
-    (org-babel-load-file "+work-config.org")
-  (error nil))
+(let ((fname (concat (file-name-as-directory doom-private-dir) "+work-config.org")))
+  (if (file-exists-p fname)
+      (org-babel-load-file fname)))
+
 #+END_SRC
+
 * GNUS
 :PROPERTIES:
 :ID:       563a8e77-2ada-4025-96e6-dd5523978c3b
