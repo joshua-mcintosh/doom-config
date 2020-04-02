@@ -88,29 +88,19 @@ org-directory if needed.
 I've come to like the 'org-roam' package. I'm trying to build some momentum in
 zettelkasten data organization, and this seems promising.
 
+It turns out org-roam has been added as a feature to doom-emacs, so some of my
+config here is obsolete :-)
+
 #+BEGIN_SRC emacs-lisp :tangle yes
-(use-package! org-roam
-  :hook
-  (after-init . org-roam-mode)
-  :commands (org-roam-insert org-roam-find-file org-roam)
-  :init
-  (map! :leader
-        :prefix "n"
-        :desc "Org-Roam Insert" "i" #'org-roam-insert
-        :desc "Org-Roam Find" "/" #'org-roam-find-file
-        :desc "Org-Roam Buffer" "b" #'org-roam)
-  :config
-  (unless (boundp 'org-roam-directory)
-    (setq org-roam-directory (concat (file-name-as-directory org-directory) "KB"))
-    (let* ((default-directory org-roam-directory))
-      (add-dir-local-variable nil org-roam-directory org-roam-directory)))
-  (org-roam-mode +1))
-
-
-(use-package! company-org-roam
-  :after org-roam company org
-  :config
-  (company-org-roam-init))
+(unless (boundp 'org-roam-directory)
+  (setq org-roam-directory (concat (file-name-as-directory org-directory) "KB"))
+  (let* ((default-directory org-roam-directory))
+    (add-dir-local-variable nil org-roam-directory org-roam-directory)))
+(map! :leader
+      :prefix "n"
+      :desc "Org-Roam Insert" "i" #'org-roam-insert
+      :desc "Org-Roam Find" "/" #'org-roam-find-file
+      :desc "Org-Roam Buffer" "b" #'org-roam)
 #+END_SRC
 ** 'TODO' states
 :PROPERTIES:

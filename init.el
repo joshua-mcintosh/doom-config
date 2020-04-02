@@ -36,7 +36,7 @@
        (evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
        fold              ; basic code-folding support
-       format  ; automated prettiness
+       (format +onsave)  ; automated prettiness
        ;; god
        ;;lispy             ; vim for lisp, for people who dont like vim
        multiple-cursors  ; editing in many places at once
@@ -92,7 +92,7 @@
        ;;elm               ; care for a cup of TEA?
        emacs-lisp        ; drown in parentheses
        ;;ess               ; emacs speaks statistics
-       go                ; the hipster dialect
+       (go +lsp)                ; the hipster dialect
        (haskell +intero) ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ;
@@ -115,7 +115,9 @@
         +pandoc
         +hugo
         +dragandrop
-        +present)        ; Emacs for presentations
+        +present
+        +roam
+        )        ; Emacs for presentations
        perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
