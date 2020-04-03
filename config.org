@@ -519,7 +519,7 @@ this is a bit new to me (as in -- I cribbed it recently...).
 ; Tags with fast selection keys
 (setq org-tag-alist (quote ((:startgroup)
                             ("@errand" . ?e)
-                            ("@office" . ?o)
+                            ("@cloud" . ?c)
                             ("@home" . ?H)
                             ("@farm" . ?f)
                             (:endgroup)
@@ -532,8 +532,9 @@ this is a bit new to me (as in -- I cribbed it recently...).
                             ("NORANG" . ?N)
                             ("crypt" . ?E)
                             ("NOTE" . ?n)
-                            ("CANCELLED" . ?c)
-                            ("FLAGGED" . ??))))
+                            ("CANCELLED" . ?C)
+                            ("FLAGGED" . ??)
+                            ("SMALL" . ?s))))
 
 ; Allow setting single tags without the menu
 (setq org-fast-tag-selection-single-key (quote expert))
