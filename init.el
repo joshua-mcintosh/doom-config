@@ -110,11 +110,12 @@
         +attach          ; custom attachment system
         +babel           ; running code in org
         +capture         ; org-capture in and outside of Emacs
-        +export          ; Exporting org to whatever you want
-        +pomodoro
-        +pandoc
-        +hugo
         +dragandrop
+        +export          ; Exporting org to whatever you want
+        +hugo
+        +journal
+        +pandoc
+        +pomodoro
         +present
         +roam
         )        ; Emacs for presentations

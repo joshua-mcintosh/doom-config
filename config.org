@@ -83,7 +83,7 @@ org-directory if needed.
 
 #+END_SRC
 
-** Custom Packages
+** Custom Packages and config
 *** org-roam
 I've come to like the 'org-roam' package. I'm trying to build some momentum in
 zettelkasten data organization, and this seems promising.
@@ -102,6 +102,21 @@ config here is obsolete :-)
       :desc "Org-Roam Find" "/" #'org-roam-find-file
       :desc "Org-Roam Buffer" "b" #'org-roam)
 #+END_SRC
+*** org-journal
+A souped-up journal, possibly preferable to `org-roam-today` (at least, the
+org-roam docs say that).
+
+#+begin_src emacs-lisp :tangle yes
+(after! org
+  (when (and (featurep! :lang org +journal) (featurep! :lang org +roam))
+    (setq org-journal-date-prefix "#+TITLE: "
+          org-journal-file-format "%Y-%m-%d.org"
+          org-journal-dir org-roam-directory
+          org-journal-date-format "%A, %d %B %Y")))
+#+end_src
+
+
+
 ** 'TODO' states
 :PROPERTIES:
 :ID:       4e88dac9-9edb-4d7f-823a-ec5e1aeb3610
