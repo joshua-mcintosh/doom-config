@@ -7,13 +7,11 @@
 ;; (package! builtin-package :disable t)
 (load! "+work-packages" nil t)
 
-(package! org-habit :disable t)
-(package! org-protocol :disable t)
-(package! mercurial :disable t)
+;; (package! mercurial)
 
-;; (package! yequake :recipe (yequake :host github :repo "alphapapa/yequake"))
-
-(package! magithub :disable t)
+(package! yequake :recipe (:host github :repo "alphapapa/yequake"))
+(package! magithub)
+(package! emoji-cheat-sheet-plus)
 
 (package! auth-source-xoauth2 :recipe (:host github :repo "ccrusius/auth-source-xoauth2"))
 (package! org-brain :recipe (:host github :repo "Kungsgeten/org-brain"))

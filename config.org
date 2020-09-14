@@ -4,6 +4,13 @@
 :PROPERTIES:
 :ID:       36dcddeb-f7bf-47c0-8609-c605c74fdbdc
 :END:
+
+Lets dress to the 9s. I'm rockin doom, so lets put on something nice.
+
+#+begin_src emacs-lisp :tangle yes
+(setq doom-theme 'doom-tomorrow-night)
+#+end_src
+
 I have a little bit of config that lives on the work side, so lets load it if
 it's there. No worries if it isn't.
 
@@ -94,8 +101,14 @@ config here is obsolete :-)
 #+BEGIN_SRC emacs-lisp :tangle yes
 (unless (boundp 'org-roam-directory)
   (setq org-roam-directory (concat (file-name-as-directory org-directory) "KB"))
+  (add-to-list 'org-agenda-files org-roam-directory 'append)
+  (add-to-list 'org-agenda-files (concat (file-name-as-directory
+                                          org-roam-directory) "journal") 'append)
   (let* ((default-directory org-roam-directory))
     (add-dir-local-variable nil org-roam-directory org-roam-directory)))
+
+;; (setq org-roam-date-filename-format "journal/%Y-%m-%d")
+
 (map! :leader
       :prefix "n"
       :desc "Org-Roam Insert" "i" #'org-roam-insert
@@ -107,15 +120,16 @@ A souped-up journal, possibly preferable to `org-roam-today` (at least, the
 org-roam docs say that).
 
 #+begin_src emacs-lisp :tangle yes
-(after! org
-  (when (and (featurep! :lang org +journal) (featurep! :lang org +roam))
-    (setq org-journal-date-prefix "#+TITLE: "
-          org-journal-file-format "%Y-%m-%d.org"
-          org-journal-dir org-roam-directory
-          org-journal-date-format "%A, %d %B %Y")))
+;; (if (featurep! :lang org +journal))
+;; (after! org-journal
+;;   (setq org-journal-date-prefix "* "
+;;         org-journal-file-format "%Y-%m-%d.org"
+;;         org-journal-dir (concat (file-name-as-directory org-roam-directory) "journal")
+;;         org-journal-date-format "%A, %d %B %Y"
+;;         org-journal-file-pattern (org-journal-dir-and-format->regex
+;;                                   org-journal-dir org-journal-file-format))
+ ;   (add-to-list 'auto-mode-alist (cons org-journal-file-pattern 'org-journal-mode)))
 #+end_src
-
-
 
 ** 'TODO' states
 :PROPERTIES:
@@ -173,42 +187,42 @@ appropriately.
 (unless (boundp 'jm/org-capture-templates)
   (setq jm/org-capture-templates (list)))
 (add-to-list 'jm/org-capture-templates
-             `("t" "todo" entry (file ,(concat org-directory "refile.org"))
+             `("t" "todo" entry (file ,(concat (file-name-as-directory org-directory) "refile.org"))
                "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("d" "Daily" entry (file+datetree ,(concat org-directory "diary.org"))
+             `("d" "Daily" entry (file+datetree ,(concat (file-name-as-directory org-directory) "diary.org"))
                (file ,(concat doom-private-dir "templates/daily.org_template")))
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("r" "respond" entry (file ,(concat org-directory "refile.org"))
+             `("r" "respond" entry (file ,(concat (file-name-as-directory org-directory) "refile.org"))
                "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("n" "note" entry (file ,(concat org-directory "refile.org"))
+             `("n" "note" entry (file ,(concat (file-name-as-directory org-directory) "refile.org"))
                "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("p" "org-protocol" entry (file ,(concat org-directory "refile.org"))
+             `("p" "org-protocol" entry (file ,(concat (file-name-as-directory org-directory) "refile.org"))
                "* TODO review %^{Title}\nSource:%u, %c\n" :immediate-finish t)
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("L" "org-protocol link" entry (file ,(concat org-directory "refile.org"))
+             `("L" "org-protocol link" entry (file ,(concat (file-name-as-directory org-directory) "refile.org"))
                "* TODO %? [[%:link][%:description]] \nCaptured on: %U" :immediate-finish t)
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("m" "Meeting" entry (file+datetree ,(concat org-directory "diary.org"))
+             `("m" "Meeting" entry (file+datetree ,(concat (file-name-as-directory org-directory) "diary.org"))
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("w" "Review: Weekly Review" entry (file+olp+datetree ,(concat org-directory "reviews.org"))
+             `("w" "Review: Weekly Review" entry (file+olp+datetree ,(concat (file-name-as-directory org-directory) "reviews.org"))
                (file ,(concat doom-private-dir "templates/weeklyreviewtemplate.org")))
              'append)
 
@@ -953,4 +967,22 @@ crated this.
 ** End of GTD
 #+begin_src emacs-lisp :tangle yes
 )
+#+end_src
+* Miscellaneous
+Things I'm still trying out. ok_hand:
+#+begin_src emacs-lisp :tangle yes
+(use-package! emoji-cheat-sheet-plus)
+(if (featurep! :completion company)
+    (use-package! company-emoji
+      :defer t
+      :init (setq company-emoji-insert-unicode nil)))
+
+(map! :leader
+      :prefix "i"
+      :desc "emoji buffer" "E" #'emoji-cheat-sheet-plus-buffer
+      :desc "emoji insert" "e" #'emoji-cheat-sheet-plus-insert
+      )
+
+(use-package! org-habit)
+(use-package! org-protocol)
 #+end_src
