@@ -49,12 +49,13 @@ can do IRC too! A few different ways! I use ERC!
   (erc-services-mode 1)
   (erc-update-modules))
 #+end_src
-* GNUS
+* Mail
+** GNUS
 :PROPERTIES:
 :ID:       563a8e77-2ada-4025-96e6-dd5523978c3b
 :END:
 The venerable reader.
-** Keybindings
+*** Keybindings
 :PROPERTIES:
 :ID:       26baf050-8efe-4e69-a302-3607a8c72ae2
 :END:
@@ -65,6 +66,11 @@ Here's some top-level keybindings:
       :desc "GNUS" "g" #'gnus
       )
 #+END_SRC
+** Notmuch
+Notmuch is a mail sorting/tagging engine.
+#+begin_src emacs-lisp :tangle yes
+(use-package! notmuch)
+#+end_src
 
 * GTD
 :PROPERTIES:

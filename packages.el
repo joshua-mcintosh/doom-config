@@ -31,3 +31,5 @@
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion"))
 ;; (require 'auth-source-xoauth2)
+
+(package! notmuch :built-in t)
