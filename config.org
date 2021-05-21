@@ -20,6 +20,12 @@ it's there. No worries if it isn't.
       (org-babel-load-file fname)))
 
 #+END_SRC
+
+Lets make sure we configure evil-undo-system correctly.
+#+begin_src emacs-lisp :tangle yes
+(setq evil-undo-system 'undo-fu)
+#+end_src
+
 * ERC
 IRC is great (ok, really, I don't use it as much as I used to). Turns out emacs
 can do IRC too! A few different ways! I use ERC!
@@ -72,10 +78,11 @@ All of this takes place after loading org.
 
 I have a config that is more-or-less stolen from [[http://doc.norang.ca/org-mode.html][Norang's org-mode setup]].
 
-First, lets  pull in any work-specific configs, and set a default task and
-org-directory if needed.
+Let's set a default task and org-directory if needed. We'll also establish what
+org-modules we want enabled.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
+(setq org-modules (append org-modules '(org-habit org-crypt org-eshell)))
 
   (unless (boundp 'jm/organization-task-id)
     (setq jm/organization-task-id "64883bab-0842-4e8e-8fb6-9eff4c389cc3"))
@@ -114,7 +121,28 @@ config here is obsolete :-)
 (use-package! org-starter)
 (use-package! org-reverse-datetree)
 #+end_src
+*** yequake
+#+begin_src emacs-lisp :tangle yes
+(defun jm/org-roam-dailies-find-today ()
+  (interactive)
+  (org-roam-dailies-find-today)
+  (current-buffer))
+(use-package! yequake
+  :custom
+  (yequake-frames '(("Agenda" .
+                     ((width . 0.75)
+                      (height . 0.5)
+                      (alpha . 0.95)
+                      (buffer-fns . (jm/org-roam-dailies-find-today split-window-horizontally jm/org-agenda))
+                      (frame-parameters . ((undecorated . t))))))))
 
+(defun jm/org-agenda-yequake ()
+  (interactive)
+  (yequake-toggle "Agenda"))
+
+(map! :leader
+      :desc "Org Agenda (toggle)" :n "a" #'jm/org-agenda-yequake)
+#+end_src
 ** 'TODO' states
 :PROPERTIES:
 :ID:       4e88dac9-9edb-4d7f-823a-ec5e1aeb3610

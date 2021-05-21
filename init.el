@@ -50,6 +50,7 @@
        ibuffer
        ;;eshell            ; a consistent, cross-platform shell (WIP)
        vc                ; version-control and Emacs, sitting in a tree
+       (undo +tree)
 
        :tools
        ansible
@@ -165,9 +166,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-modules
-   (quote
-    (bibtex docview gnus habit id info irc w3m)))
  '(safe-local-variable-values
    (quote
     ((eval progn
