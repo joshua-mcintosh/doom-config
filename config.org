@@ -99,36 +99,20 @@ It turns out org-roam has been added as a feature to doom-emacs, so some of my
 config here is obsolete :-)
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(unless (boundp 'org-roam-directory)
-  (setq org-roam-directory (concat (file-name-as-directory org-directory) "KB"))
-  (add-to-list 'org-agenda-files org-roam-directory 'append)
-  (add-to-list 'org-agenda-files (concat (file-name-as-directory
-                                          org-roam-directory) "journal") 'append)
-  (let* ((default-directory org-roam-directory))
-    (add-dir-local-variable nil org-roam-directory org-roam-directory)))
-
-;; (setq org-roam-date-filename-format "journal/%Y-%m-%d")
-
+(unless (boundp 'jm/org-roam-directory)
+  (setq jm/org-roam-directory (concat (file-name-as-directory org-directory) "KB")))
+(setq org-roam-directory jm/org-roam-directory)
 (map! :leader
       :prefix "n"
       :desc "Org-Roam Insert" "i" #'org-roam-insert
       :desc "Org-Roam Find" "/" #'org-roam-find-file
       :desc "Org-Roam Buffer" "b" #'org-roam)
 #+END_SRC
-*** org-journal
-A souped-up journal, possibly preferable to `org-roam-today` (at least, the
-org-roam docs say that).
 
+*** org-reverse-datetree
 #+begin_src emacs-lisp :tangle yes
-;; (if (featurep! :lang org +journal))
-;; (after! org-journal
-;;   (setq org-journal-date-prefix "* "
-;;         org-journal-file-format "%Y-%m-%d.org"
-;;         org-journal-dir (concat (file-name-as-directory org-roam-directory) "journal")
-;;         org-journal-date-format "%A, %d %B %Y"
-;;         org-journal-file-pattern (org-journal-dir-and-format->regex
-;;                                   org-journal-dir org-journal-file-format))
- ;   (add-to-list 'auto-mode-alist (cons org-journal-file-pattern 'org-journal-mode)))
+(use-package! org-starter)
+(use-package! org-reverse-datetree)
 #+end_src
 
 ** 'TODO' states
@@ -192,8 +176,8 @@ appropriately.
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("d" "Daily" entry (file+datetree ,(concat (file-name-as-directory org-directory) "diary.org"))
-               (file ,(concat doom-private-dir "templates/daily.org_template")))
+             `("d" "Daily" entry (file+olp+datetree ,(concat (file-name-as-directory org-directory) "diary.org"))
+               (file ,(concat (file-name-as-directory doom-private-dir) "templates/daily.org_template")))
              'append)
 
 (add-to-list 'jm/org-capture-templates
@@ -217,7 +201,7 @@ appropriately.
              'append)
 
 (add-to-list 'jm/org-capture-templates
-             `("m" "Meeting" entry (file+datetree ,(concat (file-name-as-directory org-directory) "diary.org"))
+             `("m" "Meeting" entry (file+olp+datetree ,(concat (file-name-as-directory org-directory) "diary.org"))
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
              'append)
 
@@ -227,6 +211,7 @@ appropriately.
              'append)
 
 (setq org-capture-templates jm/org-capture-templates)
+
 
 #+END_SRC
 
