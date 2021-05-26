@@ -970,6 +970,7 @@ Some top-level keybindings.
         :desc "Org Agenda" "A" #'jm/org-agenda)
 #+END_SRC
 
+
 A clocking menu. I'd like to move this into the notes menu -- it came up after I
 crated this.
 
@@ -988,7 +989,7 @@ crated this.
 )
 #+end_src
 * Miscellaneous
-Things I'm still trying out. ok_hand:
+Things I'm still trying out. :+1:
 #+begin_src emacs-lisp :tangle yes
 (use-package! emoji-cheat-sheet-plus)
 (if (featurep! :completion company)
@@ -1004,4 +1005,5 @@ Things I'm still trying out. ok_hand:
 
 (use-package! org-habit)
 (use-package! org-protocol)
+
 #+end_src

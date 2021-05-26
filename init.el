@@ -113,11 +113,14 @@
         +capture         ; org-capture in and outside of Emacs
         +dragandrop
         +export          ; Exporting org to whatever you want
+        +gnuplot
         +hugo
         +journal
+        +noter
         +pandoc
         +pomodoro
         +present
+        +pretty
         +roam
         )        ; Emacs for presentations
        perl              ; write code no one else can comprehend
