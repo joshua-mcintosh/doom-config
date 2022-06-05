@@ -24,7 +24,7 @@
        (popup            ; tame sudden yet inevitable temporary windows
        ;; +all             ; catch all popups that start with an asterix
         +defaults)       ; default popup rules
-       pretty-code       ; replace bits of code with pretty symbols
+       ligatures         ; replace bits of code with pretty symbols
        ;;tabbar            ; FIXME an (incomplete) tab bar for Emacs
        unicode           ; extended unicode support for various languages
        vc-gutter         ; vcs diff in the fringe
@@ -36,7 +36,7 @@
        (evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
        fold              ; basic code-folding support
-       (format +onsave)  ; automated prettiness
+       ;; (format +onsave)  ; automated prettiness
        ;; god
        ;;lispy             ; vim for lisp, for people who dont like vim
        multiple-cursors  ; editing in many places at once
@@ -54,6 +54,7 @@
 
        :tools
        ansible
+       biblio
        direnv
        docker
        editorconfig      ; let someone else argue about tabs vs spaces
@@ -121,9 +122,9 @@
         +pomodoro
         +present
         +pretty
-        +roam
+        +roam2
         )        ; Emacs for presentations
-       perl              ; write code no one else can comprehend
+       ;; perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional
@@ -148,6 +149,9 @@
        irc               ; how neckbeards socialize
        ;;(rss +org)        ; emacs as an RSS reader
        twitter           ; twitter client https://twitter.com/vnought
+
+       :email
+       notmuch
 
        :config
        ;; For literate config users. This will tangle+compile a config.org

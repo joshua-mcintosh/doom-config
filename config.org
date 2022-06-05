@@ -1,9 +1,17 @@
+:PROPERTIES:
+:ID:       a7bc5be7-4a33-4a78-98a6-e922ea9a02fc
+:END:
 #+TITLE: Josh McIntosh's emacs config
+#+filetags: :project:
 
 * General setup
 :PROPERTIES:
 :ID:       36dcddeb-f7bf-47c0-8609-c605c74fdbdc
 :END:
+
+#+begin_src emacs-lisp :tangle yes
+(require 'helm-lib)
+#+end_src
 
 Lets dress to the 9s. I'm rockin doom, so lets put on something nice.
 
@@ -25,8 +33,18 @@ Lets make sure we configure evil-undo-system correctly.
 #+begin_src emacs-lisp :tangle yes
 (setq evil-undo-system 'undo-fu)
 #+end_src
+** Emacs Start Up Profiler
+:PROPERTIES:
+:ID:       6ac025cf-231d-48a6-a1a3-c313598c225c
+:END:
+#+begin_src emacs-lisp :tangle yes
+(use-package! esup)
+#+end_src
 
 * ERC
+:PROPERTIES:
+:ID:       e3ebfb76-bb7c-4dc1-bf77-6065fecc4ab5
+:END:
 IRC is great (ok, really, I don't use it as much as I used to). Turns out emacs
 can do IRC too! A few different ways! I use ERC!
 
@@ -50,6 +68,9 @@ can do IRC too! A few different ways! I use ERC!
   (erc-update-modules))
 #+end_src
 * Mail
+:PROPERTIES:
+:ID:       501fac60-2a59-4cfe-a121-71c460dfc5ad
+:END:
 ** GNUS
 :PROPERTIES:
 :ID:       563a8e77-2ada-4025-96e6-dd5523978c3b
@@ -67,6 +88,9 @@ Here's some top-level keybindings:
       )
 #+END_SRC
 ** Notmuch
+:PROPERTIES:
+:ID:       093cf91e-6a46-4f1a-883e-74cde9141280
+:END:
 Notmuch is a mail sorting/tagging engine.
 #+begin_src emacs-lisp :tangle yes
 (use-package! notmuch)
@@ -77,6 +101,9 @@ Notmuch is a mail sorting/tagging engine.
 :ID:       b4a9fe5a-7e7d-4179-b60d-02c55d61a6c7
 :END:
 ** Introduction
+:PROPERTIES:
+:ID:       6ee06332-5975-4a42-8136-d2b6a5e47fcb
+:END:
 All of this takes place after loading org.
 #+begin_src emacs-lisp :tangle yes
 (after! org
@@ -102,32 +129,33 @@ org-modules we want enabled.
     (setq org-agenda-files (list org-directory)))
 
 #+END_SRC
-
-** Custom Packages and config
-*** org-roam
-I've come to like the 'org-roam' package. I'm trying to build some momentum in
-zettelkasten data organization, and this seems promising.
-
-It turns out org-roam has been added as a feature to doom-emacs, so some of my
-config here is obsolete :-)
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(unless (boundp 'jm/org-roam-directory)
-  (setq jm/org-roam-directory (concat (file-name-as-directory org-directory) "KB")))
-(setq org-roam-directory jm/org-roam-directory)
-(map! :leader
-      :prefix "n"
-      :desc "Org-Roam Insert" "i" #'org-roam-insert
-      :desc "Org-Roam Find" "/" #'org-roam-find-file
-      :desc "Org-Roam Buffer" "b" #'org-roam)
-#+END_SRC
-
-*** org-reverse-datetree
+** Org-mode mandatory IDs
+:PROPERTIES:
+:ID:       21bcf4da-58bb-449b-9699-8fb127e8f8ae
+:END:
 #+begin_src emacs-lisp :tangle yes
-(use-package! org-starter)
-(use-package! org-reverse-datetree)
+(defun +org-auto-id-add-to-headlines-in-file ()
+  "Add ID property to the current file and all its headlines."
+  (when (and (or (eq major-mode 'org-mode)
+                 (eq major-mode 'org-journal-mode))
+             (eq buffer-read-only nil))
+    (save-excursion
+      (widen)
+      (goto-char (point-min))
+      (org-id-get-create)
+      ;; (org-map-entries #'org-id-get-create)
+      )))
+
+(add-hook 'before-save-hook #'+org-auto-id-add-to-headlines-in-file)
 #+end_src
+** Misc Custom Packages and config
+:PROPERTIES:
+:ID:       3d011f95-ec80-4fd3-bdb4-2e1997cd7ba8
+:END:
 *** yequake
+:PROPERTIES:
+:ID:       ab1cce50-b4c2-458c-a13e-a16c1cf16e2f
+:END:
 #+begin_src emacs-lisp :tangle yes
 (defun jm/org-roam-dailies-find-today ()
   (interactive)
@@ -149,6 +177,579 @@ config here is obsolete :-)
 (map! :leader
       :desc "Org Agenda (toggle)" :n "a" #'jm/org-agenda-yequake)
 #+end_src
+** PKM
+:PROPERTIES:
+:ID:       2f6514bc-d0d9-4a45-940b-f94c596f4c3b
+:END:
+*** org-roam
+:PROPERTIES:
+:ID:       19496fa9-cd4e-42f7-bb59-9bb76bf07c68
+:END:
+I've come to like the 'org-roam' package. I'm trying to build some momentum in
+zettelkasten data organization, and this seems promising.
+
+It turns out org-roam has been added as a feature to doom-emacs, so some of my
+config here is obsolete :-)
+
+**** org-roam directory
+:PROPERTIES:
+:ID:       10a552c2-0568-44dc-b210-355efab7c4c4
+:END:
+I use a scheme to se the directory based on a variable I set. This _may_
+be set from other configs, ie. from a work specific or private config.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(unless (boundp 'jm/org-roam-directory)
+  (setq jm/org-roam-directory (concat (file-name-as-directory org-directory) "KB")))
+(setq org-roam-directory jm/org-roam-directory)
+#+END_SRC
+**** org-roam key mapping
+:PROPERTIES:
+:ID:       07238d52-83e5-4c49-a219-fe7d2ee0be1d
+:END:
+I set up some higher-level keys in the doom-emacs "notes" prefix.
+
+#+begin_src emacs-lisp :tangle yes
+
+(map! :leader
+      :prefix "n"
+      :desc "Org-Roam Insert" "i" #'org-roam-insert
+      :desc "Org-Roam Find" "/" #'org-roam-find-file
+      :desc "Org-Roam Buffer" "b" #'org-roam)
+
+#+end_src
+**** org-roam capture
+:PROPERTIES:
+:ID:       7cfc824f-f19f-4cb9-b835-da3a60c4ddc0
+:END:
+
+#+begin_src emacs-lisp :tangle yes
+(unless (boundp 'jm/org-roam-capture-templates)
+  (setq jm/org-roam-capture-templates (list)))
+
+(defvar jm/capture-date-format (list "%Y" "%Y-Q%q" "%Y-%m" "%Y-%m-W%U" "%Y-%m-%d")
+  "OLP path to follow for capturing date info.")
+(defvar jm/capture-date-file (concat (file-name-as-directory org-roam-directory) "journal.org")
+  "Capture file to use for journaling.")
+
+(defun jm/capture-date-hierarchy ()
+  "Ensure we have approrpiate OLP defined for the given date-based capture."
+  (let* ((olp (mapcar 'format-time-string jm/capture-date-format))
+         (target (append (list 'file+olp jm/capture-date-file) (cl-copy-list olp))))
+    (set-buffer (org-capture-target-buffer jm/capture-date-file))
+    (goto-char (point-min-marker))
+    (let (spent)
+      (dolist (header olp spent)
+        (add-to-list 'spent header t)
+        (condition-case ex
+            (goto-char (org-find-olp spent t))
+          ('error
+           (goto-char (or (org-find-olp (butlast spent) t) (point-max-marker)))
+           (org-insert-heading nil nil t)
+           (dotimes (i (- (length spent) 1))
+             (org-demote))
+           (insert header "\n")))))
+    (org-roam-capture--put :if-new target)
+    (org-capture-set-target-location target)))
+
+(add-to-list 'jm/org-roam-capture-templates
+             '("d" "default" plain "%?"
+               :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+               :unnarrowed t))
+(add-to-list 'jm/org-roam-capture-templates
+             '("c" "calendarish" plain "%?"
+               :if-new (file+function "journal.org" jm/capture-date-hierarchy)))
+
+(setq org-roam-capture-templates jm/org-roam-capture-templates)
+(setq jm/org-roam-capture-templates '())
+#+end_src
+
+**** org-roam dailies
+:PROPERTIES:
+:ID:       f5a8e64f-c5e1-496b-84bc-88bcb4e86d69
+:END:
+I'd like to track not only at the daily capacity, but also potentially at:
+- weekly
+- monthly
+- quarterly
+- yearly
+
+#+begin_src emacs-lisp :tangle yes :noweb yes
+(setq org-roam-dailies-directory "journals")
+(unless (boundp 'jm/org-roam-dailies-capture-templates)
+  (setq jm/org-roam-dailies-capture-templates (list)))
+
+(setq jm/head-template "#+title: %s \n([[elisp:(jm/goto-date)][Go to %s]])\n\n* Accomplishments")
+
+(defun jm/add-daily-lookahead-props ()
+  (if-let ((dateform (org-capture-get :jm-time-format))
+           (date (format-time-string "%Y-%m-%d" (org-capture-get :default-time)))
+           (keys (org-capture-get :jm-keys)))
+
+       (if (and  (not (org-property-values "DATEFORM"))
+                 (not (org-buffer-narrowed-p)))
+           (progn
+             (goto-char (point-min))
+             (org-set-property "DATEFORM" dateform)
+             (org-set-property "DATE" date)
+             (org-set-property "KEYS" keys)))))
+
+(add-hook 'org-roam-dailies-find-file-hook #'jm/add-daily-lookahead-props)
+
+(let* ((jm/head (format jm/head-template "%<%Y-%m-%d>" "Weekly")))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               '("d" "dailies"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("dd" "default" plain "" :if-new
+                 (file+head "%<%Y-%m-%d>.org" ,jm/head)
+                 :unnarrowed t
+                 :jm-time-format "%Y-%m-W%U" :jm-keys "ww"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("da" "daily accomplishments" entry "* %?" :if-new
+                 (file+head+olp "%<%Y-%m-%d>.org" ,jm/head ("Accomplishments"))
+                 :jm-time-format "%Y-%m-W%U" :jm-keys "ww")))
+<<weeklies>>
+<<monthlies>>
+<<quarterlies>>
+<<yearlies>>
+
+(setq org-roam-dailies-capture-templates jm/org-roam-dailies-capture-templates)
+(setq jm/org-roam-dailies-capture-templates '())
+
+#+end_src
+
+This function is close to org-roam-dailies--capture, but allowing for key
+to be inserted.
+
+#+begin_src emacs-lisp :tangle yes
+(defun jm/goto-date ()
+  (if-let* ((date (car (org-property-values "DATE")))
+            (keys (car (org-property-values "KEYS")))
+            (time (date-to-time (concat date "T12:00:00+0700")))
+            (title (format-time-string (car (org-property-values "DATEFORM")) time)))
+      (let ((node (or (org-roam-node-from-title-or-alias title)
+                      (org-roam-node-create))))
+        (if (org-roam-node-id node)
+            (org-roam-node-visit node)
+          (org-roam-capture-
+             :node node
+             :templates org-roam-dailies-capture-templates
+             :keys keys
+             :props  (list :finalize 'find-file
+                           :override-default-time time))))
+    (error "Failed to capture all of date keys time and title")))
+
+  (defun jm/roam-dlys (&optional arg keys time-format time)
+    "Find an Org-roam node and insert (where the point is) an \"id:\" link to it.
+FILTER-FN is a function to filter out nodes: it takes an `org-roam-node',
+and when nil is returned the node will be filtered out."
+    (interactive "p")
+    (let ((org-roam-directory (expand-file-name org-roam-dailies-directory org-roam-directory)))
+      (unwind-protect
+          ;; Group functions together to avoid inconsistent state on quit
+          (atomic-change-group
+            (let* ((time (or
+                          time
+                          (org-capture-get :default-time) (current-time)))
+                   (timestring (format-time-string
+                                (or time-format
+                                    (org-capture-get :jm-time-format)
+                                    "%Y-%m-%d")
+                                time))
+                   (node (or (org-roam-node-from-title-or-alias timestring)
+                             (org-roam-node-create)))
+                   (description (or (org-roam-node-title node) timestring)))
+              (if (org-roam-node-id node)
+                  (let ((link (org-link-make-string
+                               (concat "id:" (org-roam-node-id node))
+                               description)))
+                    (if arg (insert link)
+                      link))
+                (progn
+                  (org-roam-capture-
+                   :node node
+                   :templates org-roam-dailies-capture-templates
+                   :keys (or keys (org-capture-get :jm-keys))
+                   :props (append
+                           (when arg
+                             (list :finalize 'insert-link))
+                           (list :insert-at (point-marker)
+                                 :link-description description
+                                 :override-default-time time)))
+                  (when (not arg)
+                    (org-link-make-string
+                     (concat "id:" (org-roam-node-id (org-roam-node-from-title-or-alias timestring)))
+                     description))))))
+        (deactivate-mark))))
+
+  (defun jm/roam-dlys-d(&optional arg time)
+    (interactive "p")
+    (jm/roam-dlys arg "dd" "%Y-%m-%d" (or time (current-time))))
+  (defun jm/roam-dlys-w(&optional arg time)
+    (interactive "p")
+    (jm/roam-dlys arg "ww" "%Y-%m-W%U" (or time (current-time))))
+  (defun jm/roam-dlys-m(&optional arg time)
+    (interactive)
+    (jm/roam-dlys arg "mm" "%Y-%m" (or time (current-time))))
+  (defun jm/roam-dlys-q(&optional arg time)
+    (interactive "p")
+    (jm/roam-dlys arg "uu" "%Y-Q%q" (or time (current-time))))
+  (defun jm/roam-dlys-y(&optional arg time)
+    (interactive "p")
+    (jm/roam-dlys arg "yy" "%Y" (or time (current-time))))
+#+end_src
+
+***** Weeklies
+:PROPERTIES:
+:ID:       a6997b0d-6241-416a-8b27-8861fba3e4c2
+:END:
+#+name: weeklies
+#+begin_src emacs-lisp :tangle yes
+(let* ((jm/head (format jm/head-template "%<%Y-%m-W%U>" "Monthly")))
+
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               '("w" "weekly"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("ww" "default" plain "" :if-new
+                 (file+head "%<%Y-%m-W%U>.org" ,jm/head)
+                 :jm-time-format "%Y-%m" :jm-keys "mm"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("wa" "weekly accomplishments" entry "* %?" :if-new
+                 (file+head+olp "%<%Y-%m-W%U>.org" ,jm/head ("Accomplishments"))
+                 :jm-time-format "%Y-%m" :jm-keys "mm")))
+
+#+end_src
+***** Monthlies
+:PROPERTIES:
+:ID:       c6f957ac-ded2-481d-ac64-104c96610321
+:END:
+#+name: monthlies
+#+begin_src emacs-lisp :tangle yes
+(let* ((jm/head (format jm/head-template "%<%Y-%m>" "Quarterly")))
+
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               '("m" "Monthly"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("mm" "default" plain "" :if-new
+                 (file+head "%<%Y-%m>.org" ,jm/head)
+                 :jm-time-format "%Y-Q%q" :jm-keys "uu"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("ma" "monthly accomplishments" entry "* %?" :if-new
+                 (file+head+olp "%<%Y-%m>.org" ,jm/head ("Accomplishments"))
+                  :jm-time-format "%Y-Q%q" :jm-keys "uu")))
+
+#+end_src
+
+***** Quarterlies
+:PROPERTIES:
+:ID:       42e0c8bd-b5b9-4a77-9bfc-2a381689ca9a
+:END:
+#+name: quarterlies
+#+begin_src emacs-lisp :tangle yes
+(let* ((jm/head (format jm/head-template "%<%Y-Q%q>" "Yearly")))
+
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               '("u" "quartlies"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("uu" "default" plain "" :if-new
+                 (file+head "%<%Y-Q%q>.org" ,jm/head)
+                 :jm-time-format "%Y" :jm-keys "yy"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("ua" "quarterly accomplishments" entry "* %?" :if-new
+                 (file+head+olp "%<%Y-Q%q>.org" ,jm/head ("Accomplishments"))
+                  :jm-time-format "%Y" :jm-keys "yy")))
+
+#+end_src
+
+***** Yearlies
+:PROPERTIES:
+:ID:       5d038165-ac6c-4ee8-8f62-6cd9f2c253aa
+:END:
+#+name: yearlies
+#+begin_src emacs-lisp :tangle yes
+(let* ((jm/head "#+title: %<%Y>\n\n* Accomplishments"))
+
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               '("y" "yearlies"))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("yy" "default" plain "" :if-new
+                 (file+head "%<%Y>.org" ,jm/head)))
+  (add-to-list 'jm/org-roam-dailies-capture-templates
+               `("ya" "yearly accomplishments" entry "* %?" :if-new
+                 (file+head+olp "%<%Y>.org" ,jm/head ("Accomplishments")))))
+
+#+end_src
+**** Tags section in  org-roam-buffer
+:PROPERTIES:
+:ID:       c35ebbcd-172a-4330-9deb-68210fd316d4
+:END:
+This will display tags section with any nodes tagged as the source node is named. Eg. if you have a node 'people' and a tag 'people', it will show the nodes tagged 'people' in the sidebar for the node 'people'.
+
+#+begin_src emacs-lisp :tangle yes
+(cl-defstruct (jm/org-roam-tag (:constructor jm/org-roam-tag-create)
+                               (:copier nil))
+  source-node target-node
+  point properties tag)
+
+(cl-defmethod org-roam-populate ((tag jm/org-roam-tag))
+  (setf (jm/org-roam-tag-source-node tag)
+        (org-roam-populate (jm/org-roam-tag-source-node tag))
+        (jm/org-roam-tag-target-node tag)
+        (org-roam-populate (jm/org-roam-tag-target-node tag))
+        (jm/org-roam-tag-point tag)
+        (org-roam-node-point (jm/org-roam-tag-source-node tag))
+        (jm/org-roam-tag-properties tag)
+        (org-roam-node-properties (jm/org-roam-tag-source-node tag)))
+  tag)
+
+(defun jm/org-roam-tags-get-2 (node)
+  "Search for tags that reference the tile or alias of a node"
+  (let ((tags (org-roam-db-query
+               [:select :distinct [node_id]
+                :from tags
+                :where (like tag $s1)]
+               (org-roam-node-title node))))
+    (cl-loop for a-tag in tags
+             collect (pcase-let ((`(,id ,tag) a-tag))
+                       (org-roam-populate
+                        (jm/org-roam-tag-create
+                         :source-node (org-roam-node-create :id id)
+                         :target-node node
+                         :tag (org-roam-node-title node)))))
+    )
+  )
+
+(defun jm/org-roam-tags-get (node &optional and-aliases)
+  "Search for tags that reference the tile or alias of a node"
+  (let* (tags
+         (node (org-roam-populate node))
+         (get-ids (lambda (see) (mapcar #'car (org-roam-db-query
+                                               [:select :distinct [node_id]
+                                                :from tags :where (like tag $s1)]
+                                               (format "%%%s%%" see))))))
+    (add-to-list 'tags (cons (org-roam-node-title node) (funcall get-ids (org-roam-node-title node))))
+    (when and-aliases
+      ;; Extract aliases from the node (assumed populated or populate here?)
+      (let ((aliases (org-roam-node-aliases node)))
+        (dolist (alias aliases)
+          (add-to-list 'tags (cons alias (funcall get-ids alias))))))
+
+    ;; loop over alist,
+    (cl-loop for (alias . ids) in tags
+             append (cl-loop for id in ids
+                             collect (org-roam-populate
+                                      (jm/org-roam-tag-create
+                                       :source-node (org-roam-node-from-id id)
+                                       :target-node node
+                                       :tag alias))))))
+
+(defun jm/org-roam-tags-sort (a b)
+  (string< (org-roam-node-title (jm/org-roam-tag-source-node a))
+           (org-roam-node-title (jm/org-roam-tag-source-node b))))
+
+(defun jm/org-roam-tags-section (node)
+  "The tags section for NODE."
+  (when-let ((tags (seq-sort #'jm/org-roam-tags-sort (jm/org-roam-tags-get node))))
+    (magit-insert-section (org-roam-tags)
+      (magit-insert-heading "Tags:")
+      (dolist (tag tags)
+        (org-roam-node-insert-section
+         :source-node (jm/org-roam-tag-source-node tag)
+         :point (jm/org-roam-tag-point tag)
+         :properties (jm/org-roam-tag-properties tag)
+         ))
+      (insert ?\n))))
+
+#+end_src
+
+
+*** md-roam
+:PROPERTIES:
+:ID:       8d9c8b30-a9b9-4d7e-86e2-2f563d9f6622
+:END:
+[[https://github.com/nobiot/md-roam][Nobiot's md-roam]] provides the ability to format your notes in markdown but
+still use the cross-ability of org-roam. I'm considering use of this for
+compatability with the [[http://anagora.org/][angora]]. To be fair, though... I really like org-mode, so
+this might be a tough sell.
+#+begin_src emacs-lisp :tangle yes
+(use-package! md-roam)
+
+(setq org-roam-file-extensions '("org" "md"))
+(defun jm/toggle-file-extensions (arg)
+  (interactive "p")
+  (cond ((eq arg 4) (setq org-roam-file-extensions '("org" "md")))
+        ((eq arg 16) (setq org-roam-file-extensions '("md" "org" )))
+        (t (setq org-roam-file-extensions (reverse org-roam-file-extensions))))
+  (message "Org-Roam format is now %s" (car org-roam-file-extensions)))
+
+(map! :leader
+      :prefix "t"
+      :desc " org-roam file format" "m" #'jm/toggle-file-extensions)
+
+#+end_src
+*** vulpea
+:PROPERTIES:
+:ID:       f0666b54-d43c-4779-b3e3-30e4a78d5f73
+:END:
+[[https://github.com/d12frosted/vulpea][Vulpea]] appears to be some extra machination around org-roam. I'm still testing
+it out.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package! vulpea)
+#+end_src
+**** Category naming for sane agenda views of roam
+:PROPERTIES:
+:ID:       6c4b58f9-95cd-4c57-9ee5-6296180acb2e
+:END:
+Based on [[https://d12frosted.io/posts/2020-06-24-task-management-with-roam-vol2.html][This blog post]].
+#+begin_src emacs-lisp :tangle yes
+(setq org-agenda-prefix-format
+      '((agenda . " %i %(jm/agenda-category 12)%?-12t% s")
+        (todo . " %i %(jm/agenda-category 12) ")
+        (tags . " %i %(jm/agenda-category 12) ")
+        (search . " %i %(jm/agenda-category 12) ")))
+
+(defun jm/buffer-prop-get (name)
+  "Get a buffer property called NAME as a string."
+  (org-with-point-at 1
+    (when (re-search-forward (concat "^#\\+" name ": \\(.*\\)")
+                             (point-max) t)
+      (let ((value (string-trim
+                    (buffer-substring-no-properties
+                     (match-beginning 1)
+                     (match-end 1)))))
+        (unless (string-empty-p value)
+          value)))))
+
+
+(defun jm/agenda-category (&optional len)
+  "Get category of item at point for agenda.
+
+Category is defined by one of the following items:
+
+- CATEGORY property
+- TITLE keyword
+- TITLE property
+- filename without directory and extension
+
+When LEN is a number, resulting string is padded right with
+spaces and then truncated with ... on the right if result is
+longer than LEN.
+
+Usage example:
+
+  (setq org-agenda-prefix-format
+        '((agenda . \" %(jm/agenda-category) %?-12t %12s\")))
+
+Refer to `org-agenda-prefix-format' for more information."
+  (let* ((file-name (when buffer-file-name
+                      (file-name-sans-extension
+                       (file-name-nondirectory buffer-file-name))))
+         (title (jm/buffer-prop-get "title"))
+         (category (org-get-category))
+         (result
+          (or (if (and
+                   title
+                   (string-equal category file-name))
+                  title
+                category)
+              "")))
+    (if (numberp len)
+        (s-truncate len (s-pad-right len " " result))
+      result)))
+#+end_src
+**** Agenda management
+:PROPERTIES:
+:ID:       3e395390-a558-4580-9700-ddae26184531
+:END:
+d12frosted has referenced org-agenda management on  his [[https://d12frosted.io/posts/2021-01-16-task-management-with-roam-vol5.html][blog]], providing
+a setup for using org-agenda with org-roam.
+
+#+begin_src emacs-lisp :tangle yes
+(defun jm/project-p ()
+  "Return non-nil if current buffer has any todo entry.
+
+TODO entries marked as done are ignored, meaning the this
+function returns nil if current buffer contains only completed
+tasks."
+  (org-element-map                          ; (2)
+       (org-element-parse-buffer 'headline) ; (1)
+       'headline
+     (lambda (h)
+       (eq (org-element-property :todo-type h)
+           'todo))
+     nil 'first-match))                     ; (3)
+
+(add-hook 'find-file-hook #'jm/project-update-tag)
+(add-hook 'before-save-hook #'jm/project-update-tag)
+
+(defun jm/project-update-tag ()
+  "Update PROJECT tag in the current buffer."
+  (when (and (not (active-minibuffer-window))
+             (progn (goto-char (point-min)) (org-roam-node-at-point)))
+    (save-excursion
+      (goto-char (point-min))
+      ;; jm: HACK - recompute filetags to read below.
+      (org-set-regexps-and-options t)
+      (let* ((tags (map 'list #'org-no-properties org-file-tags))
+             (original-tags tags))
+        (if (and (jm/project-p)
+                 (not (string-prefix-p "b/" (org-roam-node-title
+                                        (org-roam-node-at-point)))))
+            (setq tags (append (list "project") tags))
+          (setq tags (remove "project" tags)))
+        (unless (eq original-tags tags)
+          (apply #'org-roam-tag-add (list (seq-uniq tags))))))))
+
+(defun jm/project-files ()
+  "Return a list of note files containing 'project' tag." ;
+  (seq-uniq
+   (append (list
+            (concat (file-name-as-directory org-directory) "gcal.org")
+            (concat (file-name-as-directory org-directory) "refile.org"))
+           (seq-map
+            #'car
+            (org-roam-db-query
+             [:select [nodes:file]
+              :from tags
+              :left-join nodes
+              :on (= tags:node-id nodes:id)
+              :where (like tag (quote "%\"project\"%"))])))))
+
+(defun jm/agenda-files-update (&rest _)
+  "Update the value of `org-agenda-files'."
+  (setq org-agenda-files (jm/project-files)))
+
+(advice-add 'org-agenda :before #'jm/agenda-files-update)
+#+end_src
+
+*** org-transclusion
+:PROPERTIES:
+:ID:       1f60ad5a-071b-4123-8f9e-17fbb29f159e
+:END:
+#+begin_src emacs-lisp :tangle yes
+(use-package! org-transclusion)
+
+(general-auto-unbind-keys)
+(map! :localleader
+      :map org-mode-map
+      :prefix ("T" . "Transclusion")
+       "a" #'org-transclusion-add
+       "A" #'org-transclusion-add-all
+       "d" #'org-transclusion-remove
+       "D" #'org-transclusion-remove-all
+       "h" #'org-transclusion-promote-subtree
+       "l" #'org-transclusion-demote-subtree
+       "m" #'org-transclusion-make-from-link
+       "o" #'org-transclusion-open-source
+       "O" #'org-transclusion-move-to-source
+       "r" #'org-transclusion-refresh
+       "s" #'org-transclusion-live-sync-start
+       "S" #'org-transclusion-live-sync-exit)
+(general-auto-unbind-keys t)
+
+#+end_src
+
 ** 'TODO' states
 :PROPERTIES:
 :ID:       4e88dac9-9edb-4d7f-823a-ec5e1aeb3610
@@ -281,11 +882,35 @@ Here's some refile options for ya, and a norang function for refiles:
 :PROPERTIES:
 :ID:       f6a34725-144a-4326-ac09-f5ded5623678
 :END:
+
+*** org-super-agenda
+:PROPERTIES:
+:ID:       d1e00c5b-8954-411a-a24b-fe78724b0645
+:END:
+Super agenda helps to bucket items more practically.
+#+begin_src emacs-lisp :tangle yes
+;; (use-package! org-super-agenda)
+;; (setq org-super-agenda-groups
+;;         '((:name "Calendar entries"
+;;            :time-grid t
+;;            :property "calendar-id")
+;;          (:name "Today"
+;;            :time-grid t
+;;            :todo "TODAY")))
+;; (org-super-agenda-mode)
+#+end_src
+*** Custom config
+:PROPERTIES:
+:ID:       6c029ed7-f1a1-4d27-aaa5-4ee05e0a8a6b
+:END:
+
 Ok, a lot to unpack here. notably, this captures up what custom commands should
 be listed, including the big agenda view.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq org-agenda-dim-blocked-tasks nil
       org-agenda-compact-blocks t
+      org-agenda-start-day "-1d"
+      org-agenda-span 6
       org-agenda-custom-commands '(("N" "Notes" tags "NOTE"
                                     ((org-agenda-overriding-header "Notes")
                                      (org-tags-match-list-sublevels t)))
@@ -904,7 +1529,7 @@ code in blocks.
 :PROPERTIES:
 :ID:       cae73a8f-a109-4e88-b776-b13afcf3d9f3
 :END:
-More config I didn't / don't yet use.
+This sets up automatic meeting reminders within your emacs client, using appt.el.
 #+BEGIN_SRC emacs-lisp :tangle yes
 ; Erase all reminders and rebuilt reminders for today from the agenda
 (defun bh/org-agenda-to-appt ()
@@ -985,10 +1610,17 @@ crated this.
 
 #+END_SRC
 ** End of GTD
+:PROPERTIES:
+:ID:       aee68b09-c853-4b03-b4ee-a3ef70f9fb5b
+:END:
+(cap off the ~(after! org~ in the introduction.)
 #+begin_src emacs-lisp :tangle yes
 )
 #+end_src
 * Miscellaneous
+:PROPERTIES:
+:ID:       95aaeba1-72ed-4383-9c7d-3852f3bf8670
+:END:
 Things I'm still trying out. :+1:
 #+begin_src emacs-lisp :tangle yes
 (use-package! emoji-cheat-sheet-plus)
@@ -1003,7 +1635,26 @@ Things I'm still trying out. :+1:
       :desc "emoji insert" "e" #'emoji-cheat-sheet-plus-insert
       )
 
-(use-package! org-habit)
-(use-package! org-protocol)
+;; (use-package! org-habit)
+;; (use-package! org-protocol)
 
+#+end_src
+** Library of Babel
+:PROPERTIES:
+:ID:       91d0412b-a287-4428-af38-9b40a389da7c
+:END:
+I make a decent use of org-mode, and particularly org-babel. A nice feature
+of that is being able to define a library of functions and call them from
+separate files.
+
+#+begin_src emacs-lisp :tangle yes
+  (dolist (element (directory-files-recursively "~/.doom.d/lob/" ""))
+    (org-babel-lob-ingest element))
+#+end_src
+
+
+** compat
+This may be some sort of dependency for magit now. Let me try pulling it in.
+#+begin_src emacs-lisp :tangle yes
+(use-package! compat)
 #+end_src
