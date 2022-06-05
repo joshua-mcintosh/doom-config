@@ -12,24 +12,29 @@
 (package! yequake :recipe (:host github :repo "alphapapa/yequake"))
 (package! magithub)
 (package! emoji-cheat-sheet-plus)
-(package! org-reverse-datetree :recipe (:host github :repo "akirak/org-reverse-datetree"))
-(package! org-starter :recipe (:host github :repo "akirak/org-starter"))
 
 (package! auth-source-xoauth2 :recipe (:host github :repo "ccrusius/auth-source-xoauth2"))
-(package! org-brain :recipe (:host github :repo "Kungsgeten/org-brain"))
 
 (package! org-roam :recipe (:host github :repo "jethrokuan/org-roam"))
+(package! md-roam :recipe (:host github :repo "nobiot/md-roam"))
 (package! company-org-roam :recipe (:host github :repo "jethrokuan/company-org-roam"))
 (package! org-ref :recipe (:host github :repo "jkitchin/org-ref"))
 
 (package! puppet-mode)
-(package! org-toggl
-  :recipe (:host github :repo "mbork/org-toggl"))
 
 (package! imenu-list
   :recipe (:host github :repo "bmag/imenu-list"))
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion"))
-;; (require 'auth-source-xoauth2)
+(package! vulpea
+  :recipe (:host github :repo "d12frosted/vulpea"))
 
-(package! notmuch :built-in t)
+(package! notmuch
+  :recipe (:host nil :repo "https://git.notmuchmail.org/git/notmuch"
+           :files ("emacs/*.el")))
+
+
+(package! esup :recipe (:host github :repo "jschaf/esup"))
+
+
+(package! compat)
