@@ -38,3 +38,5 @@
 
 
 (package! compat)
+
+(package! keychain-environment :recipe (:host github :repo "tarsius/keychain-environment"))

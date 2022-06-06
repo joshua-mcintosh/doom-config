@@ -227,7 +227,7 @@ I set up some higher-level keys in the doom-emacs "notes" prefix.
 (unless (boundp 'jm/org-roam-capture-templates)
   (setq jm/org-roam-capture-templates (list)))
 
-(defvar jm/capture-date-format (list "%Y" "%Y-Q%q" "%Y-%m" "%Y-%m-W%U" "%Y-%m-%d")
+(defvar jm/capture-date-format (list "%Y" "%Y_Q%q" "%Y_%m" "%Y_%m_W%U" "%Y_%m_%d")
   "OLP path to follow for capturing date info.")
 (defvar jm/capture-date-file (concat (file-name-as-directory org-roam-directory) "journal.org")
   "Capture file to use for journaling.")
@@ -283,7 +283,7 @@ I'd like to track not only at the daily capacity, but also potentially at:
 
 (defun jm/add-daily-lookahead-props ()
   (if-let ((dateform (org-capture-get :jm-time-format))
-           (date (format-time-string "%Y-%m-%d" (org-capture-get :default-time)))
+           (date (format-time-string "%Y_%m_%d" (org-capture-get :default-time)))
            (keys (org-capture-get :jm-keys)))
 
        (if (and  (not (org-property-values "DATEFORM"))
@@ -296,18 +296,18 @@ I'd like to track not only at the daily capacity, but also potentially at:
 
 (add-hook 'org-roam-dailies-find-file-hook #'jm/add-daily-lookahead-props)
 
-(let* ((jm/head (format jm/head-template "%<%Y-%m-%d>" "Weekly")))
+(let* ((jm/head (format jm/head-template "%<%Y_%m_%d>" "Weekly")))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                '("d" "dailies"))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                `("dd" "default" plain "" :if-new
-                 (file+head "%<%Y-%m-%d>.org" ,jm/head)
+                 (file+head "%<%Y_%m_%d>.org" ,jm/head)
                  :unnarrowed t
-                 :jm-time-format "%Y-%m-W%U" :jm-keys "ww"))
+                 :jm-time-format "%Y_%m_W%U" :jm-keys "ww"))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                `("da" "daily accomplishments" entry "* %?" :if-new
-                 (file+head+olp "%<%Y-%m-%d>.org" ,jm/head ("Accomplishments"))
-                 :jm-time-format "%Y-%m-W%U" :jm-keys "ww")))
+                 (file+head+olp "%<%Y_%m_%d>.org" ,jm/head ("Accomplishments"))
+                 :jm-time-format "%Y_%m_W%U" :jm-keys "ww")))
 <<weeklies>>
 <<monthlies>>
 <<quarterlies>>
@@ -384,16 +384,16 @@ and when nil is returned the node will be filtered out."
 
   (defun jm/roam-dlys-d(&optional arg time)
     (interactive "p")
-    (jm/roam-dlys arg "dd" "%Y-%m-%d" (or time (current-time))))
+    (jm/roam-dlys arg "dd" "%Y_%m_%d" (or time (current-time))))
   (defun jm/roam-dlys-w(&optional arg time)
     (interactive "p")
-    (jm/roam-dlys arg "ww" "%Y-%m-W%U" (or time (current-time))))
+    (jm/roam-dlys arg "ww" "%Y_%m_W%U" (or time (current-time))))
   (defun jm/roam-dlys-m(&optional arg time)
     (interactive)
-    (jm/roam-dlys arg "mm" "%Y-%m" (or time (current-time))))
+    (jm/roam-dlys arg "mm" "%Y_%m" (or time (current-time))))
   (defun jm/roam-dlys-q(&optional arg time)
     (interactive "p")
-    (jm/roam-dlys arg "uu" "%Y-Q%q" (or time (current-time))))
+    (jm/roam-dlys arg "uu" "%Y_Q%q" (or time (current-time))))
   (defun jm/roam-dlys-y(&optional arg time)
     (interactive "p")
     (jm/roam-dlys arg "yy" "%Y" (or time (current-time))))
@@ -405,18 +405,18 @@ and when nil is returned the node will be filtered out."
 :END:
 #+name: weeklies
 #+begin_src emacs-lisp :tangle yes
-(let* ((jm/head (format jm/head-template "%<%Y-%m-W%U>" "Monthly")))
+(let* ((jm/head (format jm/head-template "%<%Y_%m_W%U>" "Monthly")))
 
   (add-to-list 'jm/org-roam-dailies-capture-templates
                '("w" "weekly"))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                `("ww" "default" plain "" :if-new
-                 (file+head "%<%Y-%m-W%U>.org" ,jm/head)
-                 :jm-time-format "%Y-%m" :jm-keys "mm"))
+                 (file+head "%<%Y_%m_W%U>.org" ,jm/head)
+                 :jm-time-format "%Y_%m" :jm-keys "mm"))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                `("wa" "weekly accomplishments" entry "* %?" :if-new
-                 (file+head+olp "%<%Y-%m-W%U>.org" ,jm/head ("Accomplishments"))
-                 :jm-time-format "%Y-%m" :jm-keys "mm")))
+                 (file+head+olp "%<%Y_%m_W%U>.org" ,jm/head ("Accomplishments"))
+                 :jm-time-format "%Y_%m" :jm-keys "mm")))
 
 #+end_src
 ***** Monthlies
@@ -425,18 +425,18 @@ and when nil is returned the node will be filtered out."
 :END:
 #+name: monthlies
 #+begin_src emacs-lisp :tangle yes
-(let* ((jm/head (format jm/head-template "%<%Y-%m>" "Quarterly")))
+(let* ((jm/head (format jm/head-template "%<%Y_%m>" "Quarterly")))
 
   (add-to-list 'jm/org-roam-dailies-capture-templates
                '("m" "Monthly"))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                `("mm" "default" plain "" :if-new
-                 (file+head "%<%Y-%m>.org" ,jm/head)
-                 :jm-time-format "%Y-Q%q" :jm-keys "uu"))
+                 (file+head "%<%Y_%m>.org" ,jm/head)
+                 :jm-time-format "%Y_Q%q" :jm-keys "uu"))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                `("ma" "monthly accomplishments" entry "* %?" :if-new
-                 (file+head+olp "%<%Y-%m>.org" ,jm/head ("Accomplishments"))
-                  :jm-time-format "%Y-Q%q" :jm-keys "uu")))
+                 (file+head+olp "%<%Y_%m>.org" ,jm/head ("Accomplishments"))
+                  :jm-time-format "%Y_Q%q" :jm-keys "uu")))
 
 #+end_src
 
@@ -446,17 +446,17 @@ and when nil is returned the node will be filtered out."
 :END:
 #+name: quarterlies
 #+begin_src emacs-lisp :tangle yes
-(let* ((jm/head (format jm/head-template "%<%Y-Q%q>" "Yearly")))
+(let* ((jm/head (format jm/head-template "%<%Y_Q%q>" "Yearly")))
 
   (add-to-list 'jm/org-roam-dailies-capture-templates
                '("u" "quartlies"))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                `("uu" "default" plain "" :if-new
-                 (file+head "%<%Y-Q%q>.org" ,jm/head)
+                 (file+head "%<%Y_Q%q>.org" ,jm/head)
                  :jm-time-format "%Y" :jm-keys "yy"))
   (add-to-list 'jm/org-roam-dailies-capture-templates
                `("ua" "quarterly accomplishments" entry "* %?" :if-new
-                 (file+head+olp "%<%Y-Q%q>.org" ,jm/head ("Accomplishments"))
+                 (file+head+olp "%<%Y_Q%q>.org" ,jm/head ("Accomplishments"))
                   :jm-time-format "%Y" :jm-keys "yy")))
 
 #+end_src
@@ -1657,4 +1657,8 @@ separate files.
 This may be some sort of dependency for magit now. Let me try pulling it in.
 #+begin_src emacs-lisp :tangle yes
 (use-package! compat)
+#+end_src
+** keychain-environment
+#+begin_src emacs-lisp :tangle yes
+(use-package! keychain-environment)
 #+end_src
