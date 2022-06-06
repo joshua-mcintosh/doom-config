@@ -225,7 +225,7 @@ I set up some higher-level keys in the doom-emacs "notes" prefix.
 
 #+begin_src emacs-lisp :tangle yes
 (unless (boundp 'jm/org-roam-capture-templates)
-  (setq jm/org-roam-capture (list)))
+  (setq jm/org-roam-capture-templates (list)))
 
 (defvar jm/capture-date-format (list "%Y" "%Y-Q%q" "%Y-%m" "%Y-%m-W%U" "%Y-%m-%d")
   "OLP path to follow for capturing date info.")
